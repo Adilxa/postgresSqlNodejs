@@ -11,3 +11,9 @@ create TABLE post(
     user_id INTEGER,
     FOREIGN KEY (user_id) REFERENCES person (id)
 )
+
+create TABLE todo(
+    id SERIAL PRIMARY KEY,
+    task VARCHAR(255) NOT NULL,
+    completed BOOLEAN DEFAULT false
+)

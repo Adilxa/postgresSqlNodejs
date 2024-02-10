@@ -4,6 +4,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
+import { debounce } from '../../utils/debounce';
 
 function TodoList() {
 
@@ -11,7 +12,7 @@ function TodoList() {
 
     const searchParams = useSearchParams()
 
-    const search = searchParams.get("task")
+    const search = searchParams.get("task");
 
     const queryClient = useQueryClient();
 
@@ -19,6 +20,10 @@ function TodoList() {
         task: "",
         completed: false
     })
+
+    useEffect(() => {
+        router.push("/?task=")
+    }, [])
 
     const getAllTodos = async () => {
         const res = await axios.get("http://localhost:8080/api/todo?name=" + search);
@@ -37,6 +42,8 @@ function TodoList() {
         queryFn: getAllTodos,
     })
 
+    console.log(data);
+
     const mutation = useMutation({
         mutationFn: onCreateTodo,
         onSuccess: () => {
@@ -51,14 +58,15 @@ function TodoList() {
         }
     })
 
-    const handleInputChange = (e) => {
+    const handleInputChange = debounce((e) => {
         e.preventDefault();
         e.stopPropagation();
         const newFilteringValue = e.target.value;
         router.replace(`?task=` + newFilteringValue);
-    };
+    }, 300);
 
-    // if (isLoading) return <h1>Loading..</h1>
+
+    if (isLoading) return <h1>Loading..</h1>
     return (
         <div className='flex flex-col w-100 justify-center items-center'>
             <h1>Todo List</h1>
